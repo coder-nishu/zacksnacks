@@ -1,0 +1,29 @@
+{
+  "office": "TwinForce",
+  "assistant": "জাকির",
+  "currency": "৳",
+  "employees": [
+    { "id": "rakib", "name": "রাকিব হাসান" },
+    { "id": "zakir", "name": "জাকির আহমেদ" },
+    { "id": "sumaiya", "name": "সুমাইয়া ইসলাম" },
+    { "id": "tanvir", "name": "তানভির আলম" },
+    { "id": "nusrat", "name": "নুসরাত জাহান" },
+    { "id": "imran", "name": "ইমরান কবির" },
+    { "id": "farhana", "name": "ফারহানা আক্তার" },
+    { "id": "sabbir", "name": "সাব্বির রহমান" },
+    { "id": "mehedi", "name": "মেহেদি হাসান" },
+    { "id": "ayesha", "name": "আয়েশা সিদ্দিকা" }
+  ],
+  "snacks": [
+    { "name": "পরোটা", "price": 15 },
+    { "name": "সিঙ্গারা", "price": 12 },
+    { "name": "সমুচা", "price": 12 },
+    { "name": "ডাল পুরি", "price": 10 },
+    { "name": "এগ টোস্ট", "price": 40 },
+    { "name": "চিকেন রোল", "price": 60 },
+    { "name": "দুধ চা", "price": 15 },
+    { "name": "ব্ল্যাক কফি", "price": 30 },
+    { "name": "কলা", "price": 15 },
+    { "name": "বিস্কুট প্যাক", "price": 20 }
+  ]
+}
