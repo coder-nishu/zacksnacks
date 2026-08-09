@@ -12,7 +12,13 @@
       "Bash(npm init *)",
       "Bash(npm install *)",
       "Bash(npx playwright *)",
-      "Bash(npm -v)"
+      "Bash(npm -v)",
+      "Bash(node -e \"console.log\\(require\\('firebase/package.json'\\).version\\)\")",
+      "Bash(xargs -r kill)",
+      "Bash(python3 -)",
+      "Bash(qlmanage -t -s 256 -o /tmp public/favicon.svg)",
+      "Read(//tmp/**)",
+      "Bash(rm -f /tmp/favicon.svg.png)"
     ]
   }
 }

@@ -6,6 +6,7 @@ import { todayDhaka, prettyDateBn } from '../utils/date';
 import { strings } from '../config/strings';
 import AdminLoginModal from './admin/AdminLoginModal';
 import AdminBar from './admin/AdminBar';
+import logo from '../assets/twinforce-logo.jpg';
 
 export default function Header() {
   const { config } = useConfig();
@@ -18,9 +19,11 @@ export default function Header() {
     <header className="sticky top-0 z-20 border-b border-line bg-surface px-4 py-3 sm:px-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand font-display text-sm font-bold text-white">
-            {config.office.slice(0, 2).toUpperCase()}
-          </div>
+          <img
+            src={logo}
+            alt={`${config.office} logo`}
+            className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain"
+          />
           <div>
             <h1 className="font-display text-[18px] font-bold text-ink sm:text-xl">
               {config.office} {strings.brandSuffix}

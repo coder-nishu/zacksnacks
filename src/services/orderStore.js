@@ -1,29 +1,9 @@
 import { todayDhaka } from '../utils/date';
+import { subscribeTodayOrders, saveOrder, deleteOrder, deleteAllOrders } from './firestoreOrders';
 
-const PREFIX = 'twinforce:orders:';
-
-function keyForToday() {
-  return `${PREFIX}${todayDhaka()}`;
-}
-
-function readOrders() {
-  try {
-    const raw = localStorage.getItem(keyForToday());
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeOrders(orders) {
-  try {
-    localStorage.setItem(keyForToday(), JSON.stringify(orders));
-  } catch {
-    // storage unavailable or full — order won't persist, but the app keeps working
-  }
-}
+let cache = [];
+let watchedDate = null;
+let unwatch = null;
 
 const listeners = new Set();
 
@@ -31,34 +11,42 @@ function notify() {
   listeners.forEach((callback) => callback());
 }
 
-window.addEventListener('storage', (event) => {
-  if (event.key === keyForToday()) notify();
-});
+// Re-points the onSnapshot listener whenever todayDhaka() rolls over to a new
+// day (e.g. the app was left open across midnight), so the cache never serves
+// yesterday's orders.
+function ensureWatching() {
+  const date = todayDhaka();
+  if (date === watchedDate) return;
+  watchedDate = date;
+  if (unwatch) unwatch();
+  cache = [];
+  unwatch = subscribeTodayOrders(date, (orders) => {
+    cache = orders;
+    notify();
+  });
+}
+
+ensureWatching();
 
 export function getOrders() {
-  return readOrders();
+  ensureWatching();
+  return cache;
 }
 
 export function getMyOrder(employeeId) {
-  return readOrders().find((order) => order.employeeId === employeeId) || null;
+  return getOrders().find((order) => order.employeeId === employeeId) || null;
 }
 
 export function submitOrder(employeeId, name, items) {
-  const orders = readOrders().filter((order) => order.employeeId !== employeeId);
-  orders.push({ employeeId, name, items, updatedAt: Date.now() });
-  writeOrders(orders);
-  notify();
+  saveOrder(todayDhaka(), employeeId, name, items).catch((err) => console.error('submitOrder failed', err));
 }
 
 export function clearMyOrder(employeeId) {
-  const orders = readOrders().filter((order) => order.employeeId !== employeeId);
-  writeOrders(orders);
-  notify();
+  deleteOrder(todayDhaka(), employeeId).catch((err) => console.error('clearMyOrder failed', err));
 }
 
 export function resetDay() {
-  writeOrders([]);
-  notify();
+  deleteAllOrders(todayDhaka()).catch((err) => console.error('resetDay failed', err));
 }
 
 export function subscribe(callback) {
