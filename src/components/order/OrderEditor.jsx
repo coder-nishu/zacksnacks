@@ -5,6 +5,9 @@ import { orderItemCount, orderTotal } from '../../utils/aggregate';
 import OrderItemRow from './OrderItemRow';
 import SnackPicker from './SnackPicker';
 import CustomItemRow from './CustomItemRow';
+import Button from '../common/Button';
+import ConfirmButton from '../common/ConfirmButton';
+import EmptyState from '../common/EmptyState';
 
 // Mounted with `key={employee.id}` by OrderForm, so switching employees remounts
 // this component and its initial state derives fresh from that person's saved order.
@@ -12,9 +15,10 @@ export default function OrderEditor({ employee, config, myOrder, dayLocked, onTo
   const [items, setItems] = useState(() => myOrder?.items ?? []);
   const [isEditing, setIsEditing] = useState(() => !myOrder);
   const [addingCustom, setAddingCustom] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const isLocked = Boolean(myOrder) && !isEditing;
-  const disabled = dayLocked || isLocked;
+  const disabled = dayLocked || isLocked || pending;
 
   const mergeItem = (incoming) => {
     const addedQty = incoming.qty ?? 1;
@@ -37,29 +41,43 @@ export default function OrderEditor({ employee, config, myOrder, dayLocked, onTo
     setItems((prev) => prev.filter((item) => item.name !== name));
   };
 
-  const handleSave = () => {
-    submitOrder(employee.id, employee.name, items);
-    setIsEditing(false);
-    onToast(strings.orderSavedFor(employee.name));
+  const handleSave = async () => {
+    setPending(true);
+    try {
+      await submitOrder(employee.id, employee.name, items);
+      setIsEditing(false);
+      onToast(strings.orderSavedFor(employee.name));
+    } catch (err) {
+      console.error('submitOrder failed', err);
+      onToast(strings.saveFailed, 'error');
+    } finally {
+      setPending(false);
+    }
   };
 
-  const handleClear = () => {
-    clearMyOrder(employee.id);
-    setItems([]);
-    onToast(strings.orderCleared);
+  const handleClear = async () => {
+    setPending(true);
+    try {
+      await clearMyOrder(employee.id);
+      setItems([]);
+      onToast(strings.orderCleared);
+    } catch (err) {
+      console.error('clearMyOrder failed', err);
+      onToast(strings.clearFailed, 'error');
+    } finally {
+      setPending(false);
+    }
   };
 
   const itemCount = orderItemCount(items);
   const totalCost = orderTotal(items);
   const hasUnpriced = items.some((item) => item.price == null);
-  const canSave = itemCount > 0 && !dayLocked;
+  const canSave = itemCount > 0 && !dayLocked && !pending;
 
   if (dayLocked && !myOrder) {
     return (
       <div className="mx-auto max-w-xl px-4 py-8 sm:px-6">
-        <div className="rounded-xl border border-dashed border-line bg-surface px-6 py-10 text-center">
-          <p className="text-sm text-muted">{strings.dayClosedNotice}</p>
-        </div>
+        <EmptyState icon="🔒" title={strings.dayClosedNotice} />
       </div>
     );
   }
@@ -80,9 +98,7 @@ export default function OrderEditor({ employee, config, myOrder, dayLocked, onTo
         </div>
 
         {items.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-line bg-surface px-6 py-8 text-center">
-            <p className="text-sm text-muted">{strings.addAtLeastOne}</p>
-          </div>
+          <EmptyState icon="🍽️" title={strings.addAtLeastOne} />
         ) : (
           <div className="overflow-hidden rounded-xl border border-line bg-surface">
             {items.map((item) => (
@@ -124,43 +140,34 @@ export default function OrderEditor({ employee, config, myOrder, dayLocked, onTo
         )}
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t border-line bg-surface px-4 py-3 sm:px-6">
+      <div className="sticky bottom-0 z-10 border-t border-line bg-surface px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_12px_-4px_rgb(0_0_0/0.08)] sm:px-6">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-sm text-muted">
-            <p className="font-mono font-semibold text-ink tabular-nums">
-              {strings.orderSubtitle(itemCount, totalCost, config.currency)}
-              {hasUnpriced && '+'}
-            </p>
+          <p className="font-mono text-sm font-semibold text-ink tabular-nums">
+            {strings.orderSubtitle(itemCount, totalCost, config.currency)}
+            {hasUnpriced && '+'}
+          </p>
+
+          <div className="flex items-center gap-2">
             {isLocked && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="text-xs text-danger underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
-              >
-                {strings.clearMyOrder}
-              </button>
+              <ConfirmButton
+                label={strings.clearMyOrder}
+                confirmLabel={strings.clearConfirm}
+                onConfirm={handleClear}
+                disabled={pending}
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-danger/30 px-4 py-3 text-sm font-semibold text-danger transition-colors hover:bg-danger/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2"
+              />
+            )}
+
+            {isLocked ? (
+              <Button variant="secondary" onClick={() => setIsEditing(true)} disabled={dayLocked}>
+                {strings.editOrder}
+              </Button>
+            ) : (
+              <Button variant="primary" onClick={handleSave} disabled={!canSave} pending={pending}>
+                {pending ? strings.savingOrder : strings.saveOrder}
+              </Button>
             )}
           </div>
-
-          {isLocked ? (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              disabled={dayLocked}
-              className="rounded-lg border border-line bg-surface px-5 py-3 text-base font-semibold text-ink hover:bg-paper disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ✏️ Edit
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={!canSave}
-              className="rounded-lg bg-brand px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-brand-ink disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-            >
-              Save order
-            </button>
-          )}
         </div>
       </div>
     </div>

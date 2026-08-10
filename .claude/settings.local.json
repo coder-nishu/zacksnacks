@@ -18,7 +18,9 @@
       "Bash(python3 -)",
       "Bash(qlmanage -t -s 256 -o /tmp public/favicon.svg)",
       "Read(//tmp/**)",
-      "Bash(rm -f /tmp/favicon.svg.png)"
+      "Bash(rm -f /tmp/favicon.svg.png)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5183/)",
+      "Bash(pkill -f \"vite.*5183\")"
     ]
   }
 }

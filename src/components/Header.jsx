@@ -5,18 +5,16 @@ import { useAdmin } from '../hooks/useAdmin';
 import { todayDhaka, prettyDateBn } from '../utils/date';
 import { strings } from '../config/strings';
 import AdminLoginModal from './admin/AdminLoginModal';
-import AdminBar from './admin/AdminBar';
 import logo from '../assets/twinforce-logo.jpg';
 
-export default function Header() {
+export default function Header({ adminBarOpen, onToggleAdminBar }) {
   const { config } = useConfig();
   const [locked] = useDayLock();
   const { isAdmin } = useAdmin();
   const [showLogin, setShowLogin] = useState(false);
-  const [showAdminBar, setShowAdminBar] = useState(false);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-surface px-4 py-3 sm:px-6">
+    <header className="border-b border-line bg-surface px-4 py-3 sm:px-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <img
@@ -43,8 +41,11 @@ export default function Header() {
           {isAdmin ? (
             <button
               type="button"
-              onClick={() => setShowAdminBar(true)}
-              className="rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white sm:text-sm"
+              onClick={onToggleAdminBar}
+              aria-pressed={adminBarOpen}
+              className={`min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold sm:text-sm ${
+                adminBarOpen ? 'bg-brand-ink text-white' : 'bg-brand text-white'
+              }`}
             >
               {config.assistant}
             </button>
@@ -52,7 +53,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setShowLogin(true)}
-              className="rounded-full border border-line px-3 py-1 text-xs font-semibold text-ink hover:bg-paper sm:text-sm"
+              className="min-h-9 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper sm:text-sm"
             >
               {strings.login}
             </button>
@@ -61,7 +62,6 @@ export default function Header() {
       </div>
 
       {showLogin && <AdminLoginModal assistant={config.assistant} onClose={() => setShowLogin(false)} />}
-      {showAdminBar && <AdminBar onClose={() => setShowAdminBar(false)} />}
     </header>
   );
 }

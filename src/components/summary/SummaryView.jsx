@@ -16,7 +16,7 @@ export default function SummaryView() {
       <OrderStatusSummary employees={config.employees} orders={orders} />
 
       {orders.length === 0 ? (
-        <EmptyState title={strings.noOrdersToday} />
+        <EmptyState icon="📋" title={strings.noOrdersToday} />
       ) : (
         <>
           <ShoppingListTable config={config} summary={buildSummary(orders)} />

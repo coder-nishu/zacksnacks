@@ -38,11 +38,11 @@ export function getMyOrder(employeeId) {
 }
 
 export function submitOrder(employeeId, name, items) {
-  saveOrder(todayDhaka(), employeeId, name, items).catch((err) => console.error('submitOrder failed', err));
+  return saveOrder(todayDhaka(), employeeId, name, items);
 }
 
 export function clearMyOrder(employeeId) {
-  deleteOrder(todayDhaka(), employeeId).catch((err) => console.error('clearMyOrder failed', err));
+  return deleteOrder(todayDhaka(), employeeId);
 }
 
 export function resetDay() {

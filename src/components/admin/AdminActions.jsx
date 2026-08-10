@@ -5,6 +5,7 @@ import { buildSummary } from '../../utils/aggregate';
 import { downloadOrdersCsv } from '../../utils/exportOrders';
 import { resetDay } from '../../services/orderStore';
 import ConfirmButton from '../common/ConfirmButton';
+import Button from '../common/Button';
 
 export default function AdminActions() {
   const { config } = useConfig();
@@ -16,18 +17,14 @@ export default function AdminActions() {
 
   return (
     <div className="flex gap-2">
-      <button
-        type="button"
-        onClick={handleDownload}
-        className="flex-1 rounded-lg border border-line px-4 py-3 text-sm font-semibold text-ink hover:bg-paper"
-      >
+      <Button variant="secondary" size="sm" onClick={handleDownload} className="flex-1">
         {strings.downloadCsv}
-      </button>
+      </Button>
       <ConfirmButton
         label={strings.resetDay}
         confirmLabel={strings.resetConfirm}
         onConfirm={resetDay}
-        className="flex-[2] rounded-lg border border-danger/30 px-4 py-3 text-sm font-semibold text-danger hover:bg-danger/10"
+        className="inline-flex min-h-11 flex-2 items-center justify-center rounded-lg border border-danger/30 px-4 py-2.5 text-sm font-semibold text-danger shadow-sm transition-colors hover:bg-danger/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2"
       />
     </div>
   );

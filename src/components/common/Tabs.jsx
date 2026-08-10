@@ -7,8 +7,8 @@ const TABS = [
 
 export default function Tabs({ active, onChange }) {
   return (
-    <div role="tablist" aria-label="Sections" className="flex gap-6 border-b border-line bg-paper px-4 sm:px-6">
-      <div className="flex w-full gap-6">
+    <div role="tablist" aria-label="Sections" className="border-b border-line bg-surface px-4 py-2 sm:px-6">
+      <div className="inline-flex gap-1 rounded-full bg-paper p-1">
         {TABS.map((tab) => {
           const isActive = tab.id === active;
           return (
@@ -18,12 +18,11 @@ export default function Tabs({ active, onChange }) {
               type="button"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`relative py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                isActive ? 'text-brand' : 'text-muted hover:text-ink'
+              className={`min-h-9 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                isActive ? 'bg-brand text-white shadow-sm' : 'text-muted hover:text-ink'
               }`}
             >
               {tab.label}
-              {isActive && <span className="absolute inset-x-0 -bottom-px h-0.5 bg-brand" />}
             </button>
           );
         })}

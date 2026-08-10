@@ -1,7 +1,21 @@
+import { useState } from 'react';
 import { strings } from '../../config/strings';
 
 export default function ShoppingListTable({ config, summary }) {
   const { lines, totalItems, totalCost, hasUnpriced } = summary;
+  const [checked, setChecked] = useState(() => new Set());
+
+  const toggle = (name) => {
+    setChecked((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-sm">
@@ -13,6 +27,7 @@ export default function ShoppingListTable({ config, summary }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-muted">
+              <th className="w-10 px-4 py-2" aria-hidden="true" />
               <th className="px-4 py-2">{strings.itemName}</th>
               <th className="px-4 py-2 text-right">{strings.quantity}</th>
               <th className="px-4 py-2 text-right">{strings.unitPrice}</th>
@@ -21,19 +36,35 @@ export default function ShoppingListTable({ config, summary }) {
             </tr>
           </thead>
           <tbody>
-            {lines.map((line) => (
-              <tr key={line.name} className="border-b border-line last:border-b-0">
-                <td className="px-4 py-3 text-ink">{line.name}</td>
-                <td className="px-4 py-3 text-right font-mono font-semibold text-amber tabular-nums">{line.qty}</td>
-                <td className="px-4 py-3 text-right font-mono text-muted tabular-nums">
-                  {line.price == null ? '—' : `${config.currency}${line.price}`}
-                </td>
-                <td className="px-4 py-3 text-right font-mono text-ink tabular-nums">
-                  {line.cost == null ? '—' : `${config.currency}${line.cost}`}
-                </td>
-                <td className="px-4 py-3 text-xs text-muted">{line.orderedBy.join(', ')}</td>
-              </tr>
-            ))}
+            {lines.map((line) => {
+              const isChecked = checked.has(line.name);
+              return (
+                <tr key={line.name} className={`border-b border-line last:border-b-0 ${isChecked ? 'opacity-60' : ''}`}>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => toggle(line.name)}
+                      aria-pressed={isChecked}
+                      aria-label={strings.boughtItem(line.name)}
+                      className={`flex h-6 w-6 items-center justify-center rounded-md border text-xs text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                        isChecked ? 'border-brand bg-brand' : 'border-line bg-surface'
+                      }`}
+                    >
+                      {isChecked && '✓'}
+                    </button>
+                  </td>
+                  <td className={`px-4 py-3 text-ink ${isChecked ? 'line-through text-muted' : ''}`}>{line.name}</td>
+                  <td className="px-4 py-3 text-right font-mono font-semibold text-amber tabular-nums">{line.qty}</td>
+                  <td className="px-4 py-3 text-right font-mono text-muted tabular-nums">
+                    {line.price == null ? '—' : `${config.currency}${line.price}`}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono text-ink tabular-nums">
+                    {line.cost == null ? '—' : `${config.currency}${line.cost}`}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted">{line.orderedBy.join(', ')}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

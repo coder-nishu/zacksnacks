@@ -1,10 +1,20 @@
-// All interface text lives here except `Save order` and `Edit`, which stay English by design.
+// All interface text lives here.
 export const strings = {
   brandSuffix: 'Snacks',
   teamHeader: (count) => `টিম · ${count}`,
   noOrderYet: 'এখনো অর্ডার নেই',
   orderSubtitle: (n, total, currency) => `${n}টি আইটেম · ${currency}${total}`,
   orderHeading: 'আজকের নাশতার অর্ডার',
+  saveOrder: 'অর্ডার সেভ করুন',
+  savingOrder: 'সেভ হচ্ছে…',
+  editOrder: '✏️ সম্পাদনা করুন',
+  clearingOrder: 'মুছে ফেলা হচ্ছে…',
+  clearConfirm: 'নিশ্চিত করতে আবার চাপুন',
+  saveFailed: 'সেভ করা যায়নি, আবার চেষ্টা করুন',
+  clearFailed: 'মুছে ফেলা যায়নি, আবার চেষ্টা করুন',
+  pageNotFound: 'পৃষ্ঠাটি খুঁজে পাওয়া যায়নি',
+  pageNotFoundDescription: 'লিংকটি ভুল হতে পারে অথবা পৃষ্ঠাটি সরিয়ে ফেলা হয়েছে।',
+  goHome: 'হোমে ফিরুন',
   priceLine: (currency, price, total) => `${currency}${price} প্রতিটি · ${currency}${total} মোট`,
   addSnack: 'নাশতা যোগ করুন',
   customItem: 'কাস্টম আইটেম',
@@ -66,4 +76,8 @@ export const strings = {
   downloadCsv: 'ডাউনলোড',
   adminPanel: 'অ্যাডমিন প্যানেল',
   close: 'বন্ধ করুন',
+  foodMenuTab: 'খাবার',
+  employeeMenuTab: 'কর্মী',
+  reportsMenuTab: 'রিপোর্ট',
+  boughtItem: (name) => `${name} কেনা হয়েছে বলে চিহ্নিত করুন`,
 };
